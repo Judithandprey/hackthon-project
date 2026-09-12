@@ -1,0 +1,10 @@
+/.bundle/
+/vendor/bundle/
+/log/*
+/tmp/*
+/storage/*
+.env
+.env.local
+config/master.key
+coverage/
+.DS_Store
