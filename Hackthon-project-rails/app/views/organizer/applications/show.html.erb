@@ -1,0 +1,16 @@
+<div class="workspace"><%= link_to "← All applications", organizer_applications_path(blind: params[:blind]), class: "back-link" %><div class="page-heading"><div><span class="eyebrow"><%= @application.user.role.upcase %> APPLICATION / #<%= @application.id %></span><h1><%= @blind ? "Application ##{@application.id}" : @application.user.name %></h1><% unless @blind %><p><%= @application.user.email %> · <%= @application.organization %></p><% end %></div><span class="badge <%= @application.status %>"><%= status_label(@application.status) %></span></div>
+  <div class="review-layout"><section class="response-card"><div class="response-block"><h2><%= @application.user.mentor? ? 'Mentoring topics' : 'Skills and interests' %></h2><p><%= @application.skills.presence || 'Not provided yet.' %></p></div><div class="response-block"><h2>Why they want to join</h2><p><%= @application.motivation.presence || 'Not provided yet.' %></p></div><div class="response-block"><h2><%= @application.user.mentor? ? 'Helping a hacker get unstuck' : 'An idea or project they care about' %></h2><p><%= @application.experience.presence || 'Not provided yet.' %></p></div>
+    <% if @application.user.mentor? %><div class="response-block"><h2>Availability</h2><p><%= @application.availability.presence || 'Not provided yet.' %></p></div><% end %>
+    <% if !@blind && @application.portfolio_url.present? %><%= link_to "View their project ↗", @application.portfolio_url, target: "_blank", rel: "noopener noreferrer", class: "text-button" %><% end %>
+    <div class="response-meta">Submitted <%= pacific_time(@application.submitted_at) || '—' %></div>
+  </section><section class="aside-card rubric-card"><h2>Your review</h2><p>Score each criterion from 1 to 5. Use the same standard for every application.</p>
+    <% if @application.draft? %><div class="empty-state"><h3>Still a work in progress</h3><p>This applicant has not submitted yet. Grading becomes available after submission.</p></div><% else %>
+      <%= form_with model: @review, url: organizer_application_review_path(@application), method: :patch, class: "stack" do |form| %><%= hidden_field_tag :blind, params[:blind] %><%= form.hidden_field :lock_version, value: @application.lock_version %>
+        <% { readiness: 'Readiness & curiosity', impact: 'Potential impact', collaboration: 'Collaboration & empathy' }.each do |criterion, label| %><div class="field"><%= form.label criterion, label %><%= form.select criterion, (1..5).map { |n| ["#{n} / 5", n] }, { include_blank: "Choose a score" }, required: true %></div><% end %>
+        <div class="field"><%= form.label :notes, "Private review notes" %><%= form.text_area :notes, rows: 4, maxlength: 3000, placeholder: "What stood out? What informed your decision?" %><small>Visible to organizers only.</small></div>
+        <div class="field"><%= form.label :decision %><%= form.select :decision, HackApplication::DECISIONS.map { |s| [status_label(s), s] }, selected: @application.status == 'submitted' ? 'under_review' : @application.status %></div>
+        <%= form.submit "Save review →", class: "button wide" %>
+      <% end %>
+    <% end %>
+  </section></div>
+</div>

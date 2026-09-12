@@ -1,0 +1,13 @@
+<section class="auth-page"><div class="auth-intro"><span class="eyebrow">MAKE SOMETHING MATTER</span><h1>Your place<br>starts here<span>.</span></h1><p>Build as a hacker. Give back as a mentor.<br>Bring your own perspective.</p></div><div class="entry-card"><h2>Create an account</h2><p>A few basics, then you're ready to apply.</p>
+  <%= render "shared/errors", record: @user %>
+  <%= form_with model: @user, url: sign_up_path, class: "stack" do |form| %>
+    <div class="field"><%= form.label :name, "Full name" %><%= form.text_field :name, required: true, autocomplete: "name", minlength: 2, maxlength: 100 %></div>
+    <div class="field"><%= form.label :email, "Email address" %><%= form.email_field :email, required: true, autocomplete: "email", maxlength: 254 %></div>
+    <div class="field"><%= form.label :role, "I'm joining as a" %><%= form.select :role, [["Hacker — build with a team", "hacker"], ["Mentor — help others build", "mentor"], ["Organizer — review applications", "organizer"]] %></div>
+    <div class="form-grid"><div class="field"><%= form.label :password %><%= form.password_field :password, required: true, minlength: 12, maxlength: 72, autocomplete: "new-password" %></div><div class="field"><%= form.label :password_confirmation, "Confirm password" %><%= form.password_field :password_confirmation, required: true, minlength: 12, maxlength: 72, autocomplete: "new-password" %></div></div>
+    <small>Use at least 12 characters for your password.</small>
+    <div class="field organizer-code" id="organizer-code"><%= label_tag "user_invite_code", "Organizer invitation code" %><%= password_field_tag "user[invite_code]", nil, id: "user_invite_code", autocomplete: "off", maxlength: 256 %><small>Required for organizer accounts. Ask your event administrator.</small></div>
+    <%= form.submit "Create account →", class: "button wide" %>
+  <% end %>
+  <p class="form-link">Already registered? <%= link_to "Sign in", sign_in_path %></p>
+</div></section>

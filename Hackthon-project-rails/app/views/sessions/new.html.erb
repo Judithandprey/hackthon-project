@@ -1,0 +1,8 @@
+<section class="auth-page"><div class="auth-intro"><span class="eyebrow">WELCOME BACK</span><h1>Pick up where<br>you left off<span>.</span></h1><p>Your ideas deserve a place to grow.</p></div><div class="entry-card"><h2>Sign in</h2><p>Use the email and password for your account.</p>
+  <%= form_with url: sign_in_path, class: "stack" do |form| %>
+    <div class="field"><%= form.label :email, "Email address" %><%= form.email_field :email, value: params[:email], required: true, autocomplete: "email", maxlength: 254 %></div>
+    <div class="field"><%= form.label :password %><%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72 %></div>
+    <%= form.submit "Sign in →", class: "button wide" %>
+  <% end %>
+  <p class="form-link">New here? <%= link_to "Create an account", sign_up_path %></p>
+</div></section>

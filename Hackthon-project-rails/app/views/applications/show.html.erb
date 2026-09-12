@@ -1,0 +1,33 @@
+<div class="workspace">
+  <div class="page-heading"><div><span class="eyebrow">APPLICANT PORTAL</span><h1>Hey <%= current_user.name.split.first %>, let's make it happen.</h1><p>A few details about you. A little about what's next.</p></div><span class="round-icon">↗</span></div>
+  <div class="application-layout">
+    <section class="form-card">
+      <div class="card-heading"><div><h2><%= current_user.role.capitalize %> application</h2><p><%= current_user.mentor? ? "Share your experience. Help great ideas take shape." : "Bring an idea, a skill, or the desire to learn." %></p></div><span class="badge <%= @application.status %>"><%= status_label(@application.status) %></span></div>
+      <% unless @application.draft? %><div class="receipt"><strong>✓ Your application is in.</strong><p>Submitted <%= pacific_time(@application.submitted_at) %> · Reference #<%= @application.id %></p></div><% end %>
+      <%= render "shared/errors", record: @application %>
+      <%= form_with model: @application, url: application_path, method: @application.persisted? ? :patch : :post, html: { id: "application-form", "data-editable": @application.draft? } do |form| %>
+        <%= form.hidden_field :lock_version %>
+        <fieldset <%= 'disabled' unless @application.draft? %>>
+          <div class="form-section"><div class="numbered-title"><span>01</span><h3>The basics</h3></div>
+            <div class="form-grid"><div class="field"><label>Full name</label><input value="<%= current_user.name %>" disabled aria-label="Full name"></div><div class="field"><label>Email address</label><input value="<%= current_user.email %>" disabled aria-label="Email address"></div></div>
+            <div class="field"><%= form.label :organization, current_user.mentor? ? "Organization / current role" : "School or organization" %><%= form.text_field :organization, maxlength: 160, data: { minimum: 2 }, placeholder: current_user.mentor? ? "e.g. Software engineer at …" : "e.g. University of California, Berkeley" %></div>
+            <div class="field"><%= form.label :skills, current_user.mentor? ? "What can you help hackers with?" : "What skills do you bring or want to learn?" %><%= form.text_field :skills, maxlength: 500, data: { minimum: 2 }, placeholder: "e.g. Python, product design, building web apps" %></div>
+          </div>
+          <div class="form-section"><div class="numbered-title"><span>02</span><h3><%= current_user.mentor? ? "Your perspective" : "Your spark" %></h3></div>
+            <div class="field"><%= form.label :motivation, current_user.mentor? ? "Why do you want to mentor?" : "Why do you want to join?" %><%= form.text_area :motivation, rows: 4, maxlength: 3000, data: { minimum: 30 }, placeholder: "Tell us what brings you here." %><small>30 characters minimum · Be specific, be yourself.</small></div>
+            <div class="field"><%= form.label :experience, current_user.mentor? ? "A hacker is stuck. How would you help them?" : "Tell us about an idea or a project you care about." %><%= form.text_area :experience, rows: 5, maxlength: 3000, data: { minimum: 30 }, placeholder: "Share how you think, what you tried, or what you want to explore." %><small>30 characters minimum · Up to 3,000 characters.</small></div>
+            <% if current_user.mentor? %><div class="field"><%= form.label :availability, "When are you available to mentor?" %><%= form.text_field :availability, maxlength: 160, data: { minimum: 2 }, placeholder: "e.g. Saturday, 2–6 PM Pacific" %></div><% end %>
+            <div class="field"><%= form.label :portfolio_url, "A link to something you've made (optional)" %><%= form.url_field :portfolio_url, maxlength: 500, placeholder: "https://github.com/your-name/project" %></div>
+          </div>
+          <% if @application.draft? %><div class="form-actions"><small id="save-state"><%= @application.persisted? ? "Last saved #{pacific_time(@application.updated_at)}" : "Start anywhere. Save when you're ready." %></small><div><%= form.button "Save draft", name: "intent", value: "save", class: "button secondary" %><%= form.button "Submit application →", name: "intent", value: "submit", class: "button" %></div></div><% end %>
+        </fieldset>
+      <% end %>
+      <% unless @application.draft? %><div class="form-actions"><small>Submitted applications are read-only.</small><%= link_to "Refresh status ↻", application_path, class: "text-button" %></div><% end %>
+    </section>
+    <aside>
+      <section class="aside-card"><div class="aside-title"><h2>Ready when you are</h2><strong id="progress-percent"><%= @application.completeness %>%</strong></div><progress id="completion" value="<%= @application.completeness %>" max="100" aria-label="Application completeness"></progress><p class="muted">Your application checklist</p><ul class="checklist"><% @application.checklist.each do |field, (label, done)| %><li data-check="hack_application_<%= field %>" class="<%= 'done' if done %>"><span class="check-icon"><%= done ? '✓' : '○' %></span><%= link_to label, "#hack_application_#{field}" %></li><% end %></ul><small>Click an item to jump to it. Save your draft whenever you need a break.</small></section>
+      <section class="aside-card"><h2>Your application journey</h2><ol class="journey"><li class="reached"><strong>Make it yours</strong><p>Tell us your story.</p></li><li class="<%= 'reached' unless @application.draft? %>"><strong>Send it our way</strong><p><%= @application.draft? ? 'Submit when you are ready.' : 'Application received.' %></p></li><li class="<%= 'reached' if HackApplication::DECISIONS.include?(@application.status) %>"><strong><%= @application.status.in?(%w[accepted waitlisted declined]) ? status_label(@application.status) : 'Hear from the team' %></strong><p><%= @application.status == 'under_review' ? 'The team is reviewing your application.' : 'Your latest status appears here.' %></p></li></ol></section>
+      <section class="tip-card"><span>✧</span><h3>Show us how you think.</h3><p>A specific example tells us more than a long list of tools. Share what you learned or want to explore.</p></section>
+    </aside>
+  </div>
+</div>

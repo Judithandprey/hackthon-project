@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: hab-portal-yisha
+    runtime: ruby
+    plan: free
+    region: oregon
+    buildCommand: bash bin/render-build.sh
+    startCommand: bash bin/render-start.sh
+    healthCheckPath: /up
+    autoDeployTrigger: commit
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: BUNDLE_WITHOUT
+        value: development:test
+      - key: WEB_CONCURRENCY
+        value: "0"
+      - key: RAILS_MAX_THREADS
+        value: "5"
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      - key: ORGANIZER_INVITE_CODE
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hab-portal-yisha-db
+          property: connectionString
+databases:
+  - name: hab-portal-yisha-db
+    plan: free
+    region: oregon
+    databaseName: hab_portal
+    user: hab_portal
+    ipAllowList: []
