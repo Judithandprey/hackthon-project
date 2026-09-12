@@ -4,9 +4,7 @@ A miniature hackathon management platform by Yisha Tang for the Cal Hacks FA26 t
 
 **Ruby on Rails · MVC · Active Record · ERB · RSpec · Cucumber · Render**
 
-If you downloaded the source ZIP, see [how to upload it to GitHub](docs/GITHUB_UPLOAD.md).
 
-This project uses the structure taught in CS169. It is a normal website: people register, sign in with email and password, and create their own applications. The database starts empty.
 
 ## What works
 
